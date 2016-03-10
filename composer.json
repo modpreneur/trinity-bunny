@@ -26,11 +26,12 @@
     "symfony/var-dumper": "~3.0",
     "symfony/browser-kit": "~2.8|~3.0",
     "symfony/form": "~3",
-    "symfony/validator": "~3"
+    "symfony/validator": "~3",
+    "bunny/bunny": "@dev"
   },
 
   "autoload": {
-    "psr-4": { "Trinity\\Bundle\\BunnyBundle\\": "" },
+    "psr-4": { "Trinity\\Bundle\\BunnyBundle\\": "BunnyBundle" },
     "exclude-from-classmap": [
       "/Tests/"
     ]
