@@ -1,8 +1,8 @@
 <?php
 
-namespace Necktie\Bundle\BunnyBundle;
+namespace Trinity\Bundle\BunnyBundle;
 
-use Necktie\Bundle\BunnyBundle\DependencyInjection\BunnyBundleExtension;
+use Trinity\Bundle\BunnyBundle\DependencyInjection\BunnyBundleExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Necktie\Bundle\BunnyBundle\DependencyInjection;
+namespace Trinity\Bundle\BunnyBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;

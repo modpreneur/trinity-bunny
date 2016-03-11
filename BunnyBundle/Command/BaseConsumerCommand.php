@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Necktie\Bundle\BunnyBundle\Command;
+namespace Trinity\Bundle\BunnyBundle\Command;
 
 use InvalidArgumentException;
 
