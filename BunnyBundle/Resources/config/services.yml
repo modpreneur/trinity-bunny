@@ -1,5 +1,6 @@
 services:
 
+
     necktie.bunny.client:
        class: Bunny\Client
        arguments:

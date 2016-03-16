@@ -44,9 +44,7 @@ abstract class AbstractConsumerCommand extends ContainerAwareCommand
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         parent::initialize($input, $output);
-
-        $p = $this->getContainer()->get('necktie.listener.message_processor');
-        $p->setOutput($output);
+        
         $this->consumerTag = sprintf("PHPPROCESS_%s_%s", gethostname(), getmypid());
 
         if (defined('AMQP_WITHOUT_SIGNALS') === false) {
