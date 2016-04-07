@@ -11,6 +11,7 @@ namespace Trinity\Bundle\BunnyBundle\Consumer;
 
 use Bunny\Channel;
 use Bunny\Message;
+use Trinity\Bundle\BunnyBundle\Producer\Producer;
 use Trinity\Bundle\BunnyBundle\Setup\BaseRabbitSetup;
 
 /**
