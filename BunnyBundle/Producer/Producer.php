@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Trinity\Bundle\BunnyBundle\Consumer;
+namespace Trinity\Bundle\BunnyBundle\Producer;
 
 
 use Trinity\Bundle\BunnyBundle\Setup\BaseRabbitSetup;
