@@ -8,15 +8,15 @@
 
 namespace Trinity\Bundle\BunnyBundle\Setup;
 
-
 use Bunny\Channel;
 use Bunny\Client;
 
 /**
  * Class BaseRabbitSetup
+ *
  * @package Trinity\Bundle\BunnyBundle\Setup
  */
-abstract class BaseRabbitSetup
+class BaseRabbitSetup
 {
     /**
      * @var Client
@@ -31,33 +31,47 @@ abstract class BaseRabbitSetup
 
 
     /**
-     * @var string
+     * @var string[]
      */
-    protected $listeningQueue;
+    protected $listeningQueues;
 
 
     /**
      * @var string
      */
-    protected $outputErrorMessagesExchangeName;
+    protected $outputMessagesExchange;
+
+
+    /**
+     * @var string
+     */
+    protected $outputNotificationsExchange;
 
 
     /**
      * BaseRabbitSetup constructor.
+     *
      * @param Client $client
-     * @param string $listeningQueue
-     * @param string $outputErrorMessagesExchangeName
+     * @param string[] $listeningQueues
+     * @param string $outputMessagesExchange
+     * @param string $outputNotificationsExchange
      */
-    public function __construct(Client $client, string $listeningQueue, string $outputErrorMessagesExchangeName)
-    {
+    public function __construct(
+        Client $client,
+        array $listeningQueues,
+        string $outputMessagesExchange,
+        string $outputNotificationsExchange
+    ) {
         $this->client = $client;
-        $this->listeningQueue = $listeningQueue;
-        $this->outputErrorMessagesExchangeName = $outputErrorMessagesExchangeName;
+        $this->listeningQueues = $listeningQueues;
+        $this->outputMessagesExchange = $outputMessagesExchange;
+        $this->outputNotificationsExchange = $outputNotificationsExchange;
     }
 
 
     /**
      * Set up the rabbit queue, exchanges and so.
+     *
      * @throws \Exception
      */
     public function setUp()
@@ -69,22 +83,22 @@ abstract class BaseRabbitSetup
     /**
      * Get name of the queue which will be listening to.
      *
-     * @return string
+     * @return string[]
      */
-    public function getListeningQueue()
+    public function getListeningQueues()
     {
-        return $this->listeningQueue;
+        return $this->listeningQueues;
     }
 
 
     /**
-     * Get name of the exchange which will be used to produce error messages.
+     * Used in Producer
      *
      * @return string
      */
     public function getOutputErrorMessagesExchange()
     {
-        return $this->outputErrorMessagesExchangeName;
+        return $this->getOutputMessagesExchangeName();
     }
 
 
@@ -96,7 +110,6 @@ abstract class BaseRabbitSetup
     protected function createChannel()
     {
         if (null === $this->channel) {
-
             $this->client->connect();
             $this->channel = $this->client->channel();
         }
@@ -140,6 +153,19 @@ abstract class BaseRabbitSetup
      *
      * @return string
      */
-    abstract public function getOutputExchangeName();
+    public function getOutputMessagesExchangeName()
+    {
+        return $this->outputMessagesExchange;
+    }
 
+
+    /**
+     * Get exchange name which will be used to produce messages
+     *
+     * @return string
+     */
+    public function getOutputNotificationsExchangeName()
+    {
+        return $this->outputNotificationsExchange;
+    }
 }
