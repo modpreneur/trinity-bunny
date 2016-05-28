@@ -43,29 +43,20 @@ class BaseRabbitSetup
 
 
     /**
-     * @var string
-     */
-    protected $outputNotificationsExchange;
-
-
-    /**
      * BaseRabbitSetup constructor.
      *
      * @param Client $client
      * @param string[] $listeningQueues
      * @param string $outputMessagesExchange
-     * @param string $outputNotificationsExchange
      */
     public function __construct(
         Client $client,
         array $listeningQueues,
-        string $outputMessagesExchange,
-        string $outputNotificationsExchange
+        string $outputMessagesExchange
     ) {
         $this->client = $client;
         $this->listeningQueues = $listeningQueues;
         $this->outputMessagesExchange = $outputMessagesExchange;
-        $this->outputNotificationsExchange = $outputNotificationsExchange;
     }
 
 
@@ -156,16 +147,5 @@ class BaseRabbitSetup
     public function getOutputMessagesExchangeName()
     {
         return $this->outputMessagesExchange;
-    }
-
-
-    /**
-     * Get exchange name which will be used to produce messages
-     *
-     * @return string
-     */
-    public function getOutputNotificationsExchangeName()
-    {
-        return $this->outputNotificationsExchange;
     }
 }
