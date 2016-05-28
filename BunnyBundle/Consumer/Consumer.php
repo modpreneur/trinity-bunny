@@ -50,10 +50,9 @@ abstract class Consumer
      *
      * @param Message $message
      *
-     * @throws \Exception On any error
-     * @return void
+     * @param string $sourceQueue Source queue
      */
-    abstract public function consume(Message $message);
+    abstract public function consume(Message $message, string $sourceQueue);
 
 
     /**
@@ -64,43 +63,30 @@ abstract class Consumer
     {
         $this->setup->setUp();
 
-        $channel = $this->setup->getChannel();
-
-        $channel->consume(function (Message $message, Channel $channel) {
-            try {
-                $this->consume($message);
-                $channel->ack($message);
-            } catch (\Exception $e) {
-                $channel->nack($message, false, false); //discard the message
-                $this->produceError($e, $message);
-            }
-        }, $this->setup->getListeningQueue(), "", false, false, false, false);
+        foreach ($this->setup->getListeningQueues() as $listeningQueue) {
+            $this->consumeQueue($listeningQueue);
+        }
 
         $this->setup->getClient()->run();
     }
 
 
     /**
-     * Produce exception
+     * Set up client to consume given queue
      *
-     * @param \Exception $e
-     * @param Message $message
+     * @param string $sourceQueue
      */
-    public function produceError(\Exception $e, Message $message)
+    protected function consumeQueue(string $sourceQueue)
     {
-        if ($this->producer) {
-            $messageContent = json_decode($message->content, true);
+        $channel = $this->setup->getChannel();
 
-            $data = [];
-            $data["class"] = get_class($e);
-            $data["message"] = $e->getMessage();
-            $data["code"] = $e->getCode();
-            $data["trace"] = $e->getTraceAsString();
-            $data["line"] = $e->getLine();
-            $data["file"] = $e->getFile();
-            $data["uid"] = $messageContent["uid"];
-
-            $this->producer->publishErrorMessage(json_encode($data));
-        }
+        $channel->consume(function (Message $message, Channel $channel) use ($sourceQueue) {
+            try {
+                $this->consume($message, $sourceQueue);
+                $channel->ack($message);
+            } catch (\Exception $e) {
+                $channel->nack($message, false, false); //discard the message
+            }
+        }, $sourceQueue, '', false, false, false, false);
     }
 }
