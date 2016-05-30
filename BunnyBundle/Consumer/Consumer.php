@@ -16,6 +16,7 @@ use Trinity\Bundle\BunnyBundle\Setup\BaseRabbitSetup;
 
 /**
  * Class Consumer
+ *
  * @package Trinity\Bundle\BunnyBundle\Consumer
  */
 abstract class Consumer
@@ -36,7 +37,7 @@ abstract class Consumer
      * ServerConsumer constructor.
      *
      * @param BaseRabbitSetup $setup
-     * @param Producer $producer
+     * @param Producer        $producer
      */
     public function __construct(BaseRabbitSetup $setup, Producer $producer = null)
     {
@@ -50,43 +51,44 @@ abstract class Consumer
      *
      * @param Message $message
      *
-     * @param string $sourceQueue Source queue
+     * @param string  $queueName
      */
-    abstract public function consume(Message $message, string $sourceQueue);
+    abstract public function consume(Message $message, string $queueName);
 
 
     /**
      * Start reading messages from rabbit.
-     * @throws \Exception
+     *
+     * @param string $queueName
+     * @param int    $maximumNumberOfMessages
      */
-    public function startConsuming()
+    public function startConsuming(string $queueName, int $maximumNumberOfMessages = 0)
     {
         $this->setup->setUp();
-
-        foreach ($this->setup->getListeningQueues() as $listeningQueue) {
-            $this->consumeQueue($listeningQueue);
-        }
-
-        $this->setup->getClient()->run();
-    }
-
-
-    /**
-     * Set up client to consume given queue
-     *
-     * @param string $sourceQueue
-     */
-    protected function consumeQueue(string $sourceQueue)
-    {
         $channel = $this->setup->getChannel();
 
-        $channel->consume(function (Message $message, Channel $channel) use ($sourceQueue) {
+        $count = 0;
+
+        $channel->consume(function (Message $message, Channel $channel) use (
+            &$count,
+            $maximumNumberOfMessages,
+            $queueName
+        ) {
             try {
-                $this->consume($message, $sourceQueue);
+                $this->consume($message, $queueName);
                 $channel->ack($message);
             } catch (\Exception $e) {
                 $channel->nack($message, false, false); //discard the message
             }
-        }, $sourceQueue, '', false, false, false, false);
+
+            $count++;
+
+            if ($maximumNumberOfMessages !== 0 && $count >= $maximumNumberOfMessages) {
+                //maximum number of messages was read; could make errors if the external bunny bundle uses some __destruct() magic
+                exit(0);
+            }
+        }, $queueName, '', false, false, false, false);
+
+        $this->setup->getClient()->run();
     }
 }
