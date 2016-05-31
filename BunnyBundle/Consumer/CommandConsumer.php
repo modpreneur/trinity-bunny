@@ -3,8 +3,9 @@
 namespace Trinity\Bundle\BunnyBundle\Consumer;
 
 use Bunny\Message;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Trinity\Bundle\BunnyBundle\Event\RabbitMessageConsumedEvent;
+use Trinity\Bundle\BunnyBundle\Setup\BaseRabbitSetup;
 
 /**
  * Class CommandConsumer
@@ -13,8 +14,21 @@ use Trinity\Bundle\BunnyBundle\Event\RabbitMessageConsumedEvent;
  */
 class CommandConsumer extends Consumer
 {
-    /** @var  EventDispatcher */
+    /** @var  EventDispatcherInterface */
     protected $eventDispatcher;
+
+
+    /**
+     * CommandConsumer constructor.
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param BaseRabbitSetup $setup
+     */
+    public function __construct(EventDispatcherInterface $eventDispatcher, BaseRabbitSetup $setup)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+        parent::__construct($setup);
+    }
+
 
     /**
      * Consume message
@@ -25,12 +39,10 @@ class CommandConsumer extends Consumer
      */
     public function consume(Message $message, string $queueName)
     {
-        if ($this->eventDispatcher->hasListeners(RabbitMessageConsumedEvent::EVENT_NAME)) {
-            /** @var RabbitMessageConsumedEvent $event */
-            $this->eventDispatcher->dispatch(
-                RabbitMessageConsumedEvent::EVENT_NAME,
-                new RabbitMessageConsumedEvent($message, $queueName)
-            );
-        }
+        /** @var RabbitMessageConsumedEvent $event */
+        $this->eventDispatcher->dispatch(
+            RabbitMessageConsumedEvent::EVENT_NAME,
+            new RabbitMessageConsumedEvent($message, $queueName)
+        );
     }
 }
