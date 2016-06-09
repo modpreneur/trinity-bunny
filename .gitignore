@@ -40,3 +40,4 @@
 /composer.phar
 
 .idea/
+tests/_output/*
