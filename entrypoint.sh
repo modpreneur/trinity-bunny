@@ -4,4 +4,5 @@ composer update
 
 vendor/codeception/codeception/codecept run
 
-while true; do sleep 1000; done
+#For run test uncomment
+#while true; do sleep 1000; done
